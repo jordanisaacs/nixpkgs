@@ -7,7 +7,7 @@
   dependencies,
   crateFeatures, crateRenames, libName, release, libPath,
   crateType, metadata, crateBin, hasCrateBin,
-  extraRustcOpts, verbose, colors,
+  crossCompile, extraRustcOpts, verbose, colors,
   buildTests,
   codegenUnits
 }:
@@ -20,7 +20,7 @@
         "--remap-path-prefix=$NIX_BUILD_TOP=/"
         (mkRustcDepArgs dependencies crateRenames)
         (mkRustcFeatureArgs crateFeatures)
-      ] ++ lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+      ] ++ lib.optionals (crossCompile && (stdenv.hostPlatform != stdenv.buildPlatform)) [
         "--target" (rust.toRustTargetSpec stdenv.hostPlatform)
       ] ++ lib.optionals (needUnstableCLI dependencies) [
         "-Z" "unstable-options"

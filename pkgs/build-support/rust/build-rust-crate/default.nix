@@ -178,6 +178,11 @@ crate_: lib.makeOverridable
       # Including multiple versions of a crate is very popular during
       # ecosystem transitions, e.g. from futures 0.1 to futures 0.3.
     , crateRenames
+      # Whether allow cross compilation if specified by stdenv. Useful for
+      # build packages which should not be cross compiled
+      #
+      # Default: true
+    , crossCompile
       # A list of extra options to pass to rustc.
       #
       # Example: [ "-Z debuginfo=2" ]
@@ -334,8 +339,8 @@ crate_: lib.makeOverridable
           ++ (lib.optional (edition != null) "--edition ${edition}");
       extraRustcOptsForBuildRs =
         lib.optionals (crate ? extraRustcOptsForBuildRs) crate.extraRustcOptsForBuildRs
-        ++ extraRustcOptsForBuildRs_
-        ++ (lib.optional (edition != null) "--edition ${edition}");
+          ++ extraRustcOptsForBuildRs_
+          ++ (lib.optional (edition != null) "--edition ${edition}");
 
 
       configurePhase = configureCrate {
@@ -348,7 +353,7 @@ crate_: lib.makeOverridable
         inherit crateName dependencies
           crateFeatures crateRenames libName release libPath crateType
           metadata hasCrateBin crateBin verbose colors
-          extraRustcOpts buildTests codegenUnits;
+          crossCompile extraRustcOpts buildTests codegenUnits;
       };
       installPhase = installCrate crateName metadata buildTests;
 
@@ -367,6 +372,7 @@ crate_: lib.makeOverridable
   rust = rustc;
   release = crate_.release or true;
   verbose = crate_.verbose or true;
+  crossCompile = crate_.crossCompile or true;
   extraRustcOpts = [ ];
   extraRustcOptsForBuildRs = [ ];
   features = [ ];
