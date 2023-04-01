@@ -39769,4 +39769,6 @@ with pkgs;
   zf = callPackage ../tools/misc/zf { };
 
   isolate = callPackage ../tools/security/isolate { };
+
+  sourcegraph = callPackage ../applications/misc/sourcegraph { };
 }
